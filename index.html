@@ -21,11 +21,11 @@
     });
 
     socket.on('e-end', () => {
-      document.getElementById("b3").disabled = true;
+      document.getElementById("b4").disabled = true;
     });
 
     socket.on('p-end', () => {
-      document.getElementById("b4").disabled = true;
+      document.getElementById("b3").disabled = true;
     });
 
     function doStuff() {
@@ -52,21 +52,18 @@
             return false;
         });
         $('#begin-p').submit(function(e) {
-            document.getElementById("b2").disabled = true;
             e.preventDefault(); // prevents page reloading
             socket.emit('begin-performance', "");
             resting = 70;
             return false;
         });
         $('#end-p').submit(function(e) {
-            document.getElementById("b3").disabled = true;
             e.preventDefault(); // prevents page reloading
             socket.emit('performance-end', "");
             resting = 60;
             return false;
         });
         $('#end-e').submit(function(e) {
-            document.getElementById("b4").disabled = true;
             e.preventDefault(); // prevents page reloading
             socket.emit('experiment-end', "");
             resting = 50;

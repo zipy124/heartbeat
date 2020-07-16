@@ -94,7 +94,7 @@ io.on('connection', (socket) => {
         console.log("Experiment started: baseline period");
         redisClient.rpush("experiment:start", JSON.stringify(new Date()), function(err, reply) {
             if(reply) {
-                //io.emit('e-start', "");
+                io.emit('e-start', "");
                 console.log("Experiment started!")
             }
             else{
