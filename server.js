@@ -17,9 +17,9 @@ const basicAuth = require('express-basic-auth')
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 
-let before_time;
-let start_time;
-let end_time;
+//let before_time;
+//let start_time;
+//let end_time;
 
 let clients = new Set();
 let clients_last_data_point = {};
@@ -92,20 +92,53 @@ io.on('connection', (socket) => {
 
     socket.on('begin-experiment', () => {
         console.log("Experiment started: baseline period");
-        start_time = new Date();
+        redisClient.rpush("experiment:start", JSON.stringify(new Date()), function(err, reply) {
+            if(reply) {
+                //io.emit('e-start', "");
+                console.log("Experiment started!")
+            }
+            else{
+                console.log("Redis push error: "+err);
+            }
+        }); // push reading to redis list
     });
 
     socket.on('begin-performance', () => {
         console.log("Performance period started!")
+        redisClient.rpush("performance:start", JSON.stringify(new Date()), function(err, reply) {
+            if(reply) {
+                io.emit('p-start', "");
+                console.log("Performance started!")
+            }
+            else{
+                console.log("Redis push error: "+err);
+            }
+        }); // push reading to redis list
     });
 
     socket.on('performance-end', () => {
         console.log("Performance ended!");
-        end_time = new Date();
+        redisClient.rpush("performance:ended", JSON.stringify(new Date()), function(err, reply) {
+            if(reply) {
+                io.emit('p-end', "");
+                console.log("Performance ended!")
+            }
+            else{
+                console.log("Redis push error: "+err);
+            }
+        }); // push reading to redis list
     });
 
     socket.on('experiment-end', () => {
-        console.log("Experiment ended!")
+        redisClient.rpush("experiment:ended", JSON.stringify(new Date()), function(err, reply) {
+            if(reply) {
+                io.emit('e-end', "");
+                console.log("Experiment ended!")
+            }
+            else{
+                console.log("Redis push error: "+err);
+            }
+        }); // push reading to redis list
     })
 
     socket.on('send-message', (message) => {

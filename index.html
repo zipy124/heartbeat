@@ -12,6 +12,22 @@
     //var socket = io();
     var resting = 50;
 
+    socket.on('e-start', () => {
+      document.getElementById("b1").disabled = true;
+    });
+
+    socket.on('p-start', () => {
+      document.getElementById("b2").disabled = true;
+    });
+
+    socket.on('e-end', () => {
+      document.getElementById("b3").disabled = true;
+    });
+
+    socket.on('p-end', () => {
+      document.getElementById("b4").disabled = true;
+    });
+
     function doStuff() {
         socket.emit('send-message', { hr: Math.round(Math.random()*30+resting)});
         setTimeout(doStuff, 1000);
@@ -30,7 +46,6 @@
             return false;
         });
         $('#begin-e').submit(function(e) {
-            document.getElementById("b1").disabled = true;
             e.preventDefault(); // prevents page reloading
             socket.emit('begin-experiment', "");
             resting = 60;
