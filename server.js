@@ -4,9 +4,7 @@
 const { variance, mean, min } = require('mathjs');
 
 let redis = require('redis');
-let redisClient = redis.createClient(6379, "redis://heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com", {
-    no_ready_check: true
-});
+let redisClient = redis.createClient(6379, "redis://heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com");
 
 redisClient.on('error', function (err) {
     console.log('Error ' + err)
