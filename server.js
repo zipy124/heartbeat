@@ -87,74 +87,7 @@ io.on('connection', (socket) => {
     }); // let user be known by a name
 
     socket.on('vis-request', () => {
-        let data = {"average": [], "variance": [], "raw": []};
-
-        let new_data = [];
-        let clients_with_new_data = [];
-        console.log(clients_data_length);
-        console.log(clients_last_data_point);
-        for (let name of clients) {
-            console.log("Checking "+name);
-            let length = clients_data_length[name];
-            console.log(length);
-            let last_data = clients_last_data_point[name];
-            console.log(last_data);
-            if (length - last_data > 0) {
-                new_data.push(length - last_data);
-                clients_with_new_data.push(name);
-            }
-        }
-        if (new_data.length === 0) {
-            return
-        }
-        let min_new_data_to_send = min(new_data);
-        console.log(new_data);
-        console.log(min_new_data_to_send);
-
-        let results_obtained = 0;
-        for (let name of clients_with_new_data) {
-            redisClient.lrange(name, 0 - min_new_data_to_send, -1, function (err, replies) {
-                if (!(replies === undefined)) {
-                    replies.forEach(function (res, i) {
-                        let redis_data = res;
-
-                        let item = JSON.parse(redis_data, function (key, value) {
-                            if (key === 'createdAt') {
-                                return new Date(value);
-                            } else {
-                                return value;
-                            }
-                        });
-                        if (data["raw"][i] === undefined) {
-                            data["raw"][i] = [];
-                        }
-                        data["raw"][i].push(item.hr);
-                        results_obtained += 1;
-                    });
-                } else {
-                    console.log(err);
-                }
-            });
-        }
-
-        function send_results() {
-            if (results_obtained === clients_with_new_data.length * min_new_data_to_send) {
-                for (i = 0; i < min_new_data_to_send; i++) {
-                    data["average"][i] = mean(data["raw"][i]);
-                    data["variance"][i] = variance(data["raw"][i], 'uncorrected');
-                }
-                for (let name of clients_with_new_data) {
-                    clients_last_data_point[name] = clients_data_length[name];
-                }
-                //console.log("Trying to send results!");
-                console.log(data);
-                socket.emit('visualise', JSON.stringify(data));
-            } else {
-                setTimeout(send_results, 100)
-            }
-        }
-
-        send_results();
+        calculate_and_send_vis(socket);
     });
 
     socket.on('begin-experiment', () => {
@@ -179,7 +112,6 @@ io.on('connection', (socket) => {
         if(socket.username) { // if known user submits heart rate, send out the information
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()}
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
-                console.log(reply);
                 if(reply) {
                     clients_data_length[socket.username] = reply;
                     console.log(socket.username + ":" +message.hr.toString() + ", " + reply.toString() + " results");
