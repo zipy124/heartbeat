@@ -20,12 +20,12 @@
       document.getElementById("b2").disabled = true;
     });
 
-    socket.on('e-end', () => {
-      document.getElementById("b4").disabled = true;
-    });
-
     socket.on('p-end', () => {
       document.getElementById("b3").disabled = true;
+    });
+
+    socket.on('e-end', () => {
+      document.getElementById("b4").disabled = true;
     });
 
     function doStuff() {

@@ -91,7 +91,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('begin-experiment', () => {
-        console.log("Experiment started: baseline period");
         redisClient.rpush("experiment:start", JSON.stringify(new Date()), function(err, reply) {
             if(reply) {
                 io.emit('e-start', "");
@@ -104,7 +103,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('begin-performance', () => {
-        console.log("Performance period started!")
         redisClient.rpush("performance:start", JSON.stringify(new Date()), function(err, reply) {
             if(reply) {
                 io.emit('p-start', "");
@@ -117,7 +115,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('performance-end', () => {
-        console.log("Performance ended!");
         redisClient.rpush("performance:ended", JSON.stringify(new Date()), function(err, reply) {
             if(reply) {
                 io.emit('p-end', "");
