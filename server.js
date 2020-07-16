@@ -4,7 +4,7 @@
 const { variance, mean, min } = require('mathjs');
 
 let redis = require('redis')
-let redisClient = redis.createClient()
+let redisClient = redis.createClient("redis://heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com:6379")
 
 redisClient.on('error', function (err) {
     console.log('Error ' + err)
@@ -293,9 +293,9 @@ function reassociate_user_data(socket, name) {
 }
 
 
-let port = process.env.PORT || 8980;
+let port = 80;
 
-server.listen(port, function(){
+server.listen(port, '0.0.0.0', function(){
     console.log('listening on http://localhost:' + port);
 
 });
