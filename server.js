@@ -91,7 +91,8 @@ io.on('connection', (socket) => {
 
         let new_data = [];
         let clients_with_new_data = [];
-
+        console.log(clients_data_length);
+        console.log(clients_last_data_point);
         for (let name of clients) {
             console.log("Checking "+name);
             let length = clients_data_length[name];
@@ -176,11 +177,11 @@ io.on('connection', (socket) => {
 
     socket.on('send-message', (message) => {
         if(socket.username) { // if known user submits heart rate, send out the information
-            console.log(socket.username + ":" +message.hr.toString());
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()}
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
                 if(reply) {
                     clients_data_length[socket.username] = reply;
+                    console.log(socket.username + ":" +message.hr.toString() + ", " + reply.toString() + " results");
                 }
                 else{
                     console.log("Redis push error: "+err);
