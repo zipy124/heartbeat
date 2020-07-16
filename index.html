@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //var socket = io.connect('http://c9ecc0c1cd45.ngrok.io');
+    var socket = io();
+    var resting = 50;
+
+    function doStuff() {
+        socket.emit('send-message', { hr: Math.round(Math.random()*30+resting)});
+        setTimeout(doStuff, 1000);
+    }
+    $(function () {
+        $('#user').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('user_joined', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+
+        $('#print_log').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('print', "");
+            return false;
+        });
+        $('#begin-e').submit(function(e) {
+            document.getElementById("b1").disabled = true;
+            e.preventDefault(); // prevents page reloading
+            socket.emit('begin-experiment', "");
+            resting = 60;
+            return false;
+        });
+        $('#begin-p').submit(function(e) {
+            document.getElementById("b2").disabled = true;
+            e.preventDefault(); // prevents page reloading
+            socket.emit('begin-performance', "");
+            resting = 70;
+            return false;
+        });
+        $('#end-p').submit(function(e) {
+            document.getElementById("b3").disabled = true;
+            e.preventDefault(); // prevents page reloading
+            socket.emit('performance-end', "");
+            resting = 60;
+            return false;
+        });
+        $('#end-e').submit(function(e) {
+            document.getElementById("b4").disabled = true;
+            e.preventDefault(); // prevents page reloading
+            socket.emit('experiment-end', "");
+            resting = 50;
+            return false;
+        });
+    });
+    setTimeout(doStuff, 1000);
+</script>
+<form id="user" action="">
+    <input id="m" autocomplete="off" /><button>Change Username</button>
+</form>
+
+<form id="print_log" action="">
+    <button>Print All data</button>
+</form>
+
+<form id="begin-e" action="">
+    <button id="b1">Begin Experiment</button>
+</form>
+
+<form id="begin-p" action="">
+    <button id="b2">Begin Performance</button>
+</form>
+
+<form id="end-p" action="">
+    <button id="b3">End Performance</button>
+</form>
+
+<form id="end-e" action="">
+    <button id="b4">End Experiment</button>
+</form>
+
+</body>
+</html>
