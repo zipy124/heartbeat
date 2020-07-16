@@ -179,7 +179,12 @@ io.on('connection', (socket) => {
             console.log(socket.username + ":" +message.hr.toString());
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()}
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
-                clients_data_length[socket.username] = reply;
+                if(reply) {
+                    clients_data_length[socket.username] = reply;
+                }
+                else{
+                    console.log("Redis push error: "+err);
+                }
             }); // push reading to redis list
 
             io.emit('message', data);
