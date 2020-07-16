@@ -3,8 +3,10 @@
 // node index.js // Run your server
 const { variance, mean, min } = require('mathjs');
 
-let redis = require('redis')
-let redisClient = redis.createClient("redis://heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com:6379")
+let redis = require('redis');
+let redisClient = redis.createClient(6379, "redis://heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com", {
+    no_ready_check: true
+});
 
 redisClient.on('error', function (err) {
     console.log('Error ' + err)
@@ -179,6 +181,7 @@ io.on('connection', (socket) => {
         if(socket.username) { // if known user submits heart rate, send out the information
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()}
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
+                console.log(reply);
                 if(reply) {
                     clients_data_length[socket.username] = reply;
                     console.log(socket.username + ":" +message.hr.toString() + ", " + reply.toString() + " results");
