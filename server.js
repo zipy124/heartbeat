@@ -17,10 +17,8 @@ const basicAuth = require('express-basic-auth')
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 
-//let before_time;
-//let start_time;
-//let end_time;
-
+let vis_data;
+let vis_time;
 
 let clients = new Set();
 let clients_last_data_point = {};
@@ -88,7 +86,15 @@ io.on('connection', (socket) => {
     }); // let user be known by a name
 
     socket.on('vis-request', () => {
-        calculate_and_send_vis(socket);
+        let now = new Date();
+        let results = JSON.parse(vis_data)["average"].length;
+        if(((now - vis_time)/1000) > results){
+            calculate_and_send_vis(socket);
+        }
+        else{
+            socket.emit('visualise', vis_data);
+            console.log(JSON.parse(vis_data));
+        }
     });
 
     socket.on('begin-experiment', () => {
@@ -359,7 +365,9 @@ function calculate_and_send_vis(socket) {
             }
             //console.log("Trying to send results!");
             console.log(data);
-            socket.emit('visualise', JSON.stringify(data));
+            vis_data = JSON.stringify(data);
+            vis_time = new Date();
+            socket.emit('visualise', vis_data);
         } else {
             setTimeout(send_results, 100)
         }
