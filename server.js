@@ -19,6 +19,7 @@ let io = require('socket.io')(server);
 
 let vis_data;
 let vis_time;
+let first_vis = true;
 
 let clients = new Set();
 let clients_last_data_point = {};
@@ -86,14 +87,19 @@ io.on('connection', (socket) => {
     }); // let user be known by a name
 
     socket.on('vis-request', () => {
-        let now = new Date();
-        let results = JSON.parse(vis_data)["average"].length;
-        if(((now - vis_time)/1000) > results){
-            calculate_and_send_vis(socket);
+        if(first_vis){
+            calculate_and_send_vis()
+            first_vis = false;
         }
-        else{
-            socket.emit('visualise', vis_data);
-            console.log(JSON.parse(vis_data));
+        else {
+            let now = new Date();
+            let results = JSON.parse(vis_data)["average"].length;
+            if (((now - vis_time) / 1000) > results) {
+                calculate_and_send_vis(socket);
+            } else {
+                socket.emit('visualise', vis_data);
+                console.log(JSON.parse(vis_data));
+            }
         }
     });
 
