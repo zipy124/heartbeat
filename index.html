@@ -69,6 +69,11 @@
             resting = 50;
             return false;
         });
+        $('#reset').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('reset', "");
+            return false;
+        });
     });
     setTimeout(doStuff, 1000);
 </script>
@@ -94,6 +99,10 @@
 
 <form id="end-e" action="">
     <button id="b4">End Experiment</button>
+</form>
+
+<form id="reset" action="">
+    <button>RESET ALL DATA</button>
 </form>
 
 </body>

@@ -21,6 +21,7 @@ let io = require('socket.io')(server);
 //let start_time;
 //let end_time;
 
+
 let clients = new Set();
 let clients_last_data_point = {};
 let clients_data_length = {};
@@ -91,7 +92,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('begin-experiment', () => {
-        redisClient.rpush("experiment:start", JSON.stringify(new Date()), function(err, reply) {
+        let key = new Date()
+        redisClient.rpush("experiment:start", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('e-start', "");
                 console.log("Experiment started!")
@@ -103,7 +105,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('begin-performance', () => {
-        redisClient.rpush("performance:start", JSON.stringify(new Date()), function(err, reply) {
+        let key = new Date()
+        redisClient.rpush("performance:start", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('p-start', "");
                 console.log("Performance started!")
@@ -115,7 +118,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('performance-end', () => {
-        redisClient.rpush("performance:ended", JSON.stringify(new Date()), function(err, reply) {
+        let key = new Date()
+        redisClient.rpush("performance:ended", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('p-end', "");
                 console.log("Performance ended!")
@@ -127,7 +131,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('experiment-end', () => {
-        redisClient.rpush("experiment:ended", JSON.stringify(new Date()), function(err, reply) {
+        let key = new Date()
+        redisClient.rpush("experiment:ended", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('e-end', "");
                 console.log("Experiment ended!")
@@ -166,6 +171,14 @@ io.on('connection', (socket) => {
             console.log(e);
         }
     });
+
+    socket.on('reset', () => {
+        console.log("RESET TRIGGERED: BETTER BE DELIBERATE!")
+        redisClient.flushdb(); // Empties redis database, only use in DEBUG, in production this could wipe valuable data.
+        clients = new Set();
+        clients_last_data_point = {};
+        clients_data_length = {};
+    });
 });
 
 // Start of helper functions
@@ -179,6 +192,54 @@ function print_user_stats(name){
     let during_count = 0;
     let after_count = 0;
 
+    let estart;
+    let pstart;
+    let pend;
+    let eend;
+
+    let redis_data_returned = 0;
+
+    redisClient.get("experiment:start", function(err, reply) {
+        if(!(reply)){
+            estart = new Date();
+        }
+        else {
+            estart = new Date(reply);
+        }
+        redis_data_returned += 1;
+    });
+    redisClient.get("performance:start", function(err, reply) {
+        if(!(reply)){
+            pstart = new Date();
+        }
+        else {
+            pstart = new Date(reply);
+        }
+        redis_data_returned += 1;
+    });
+    redisClient.get("performance:end", function(err, reply) {
+        if(!(reply)){
+            pend = new Date();
+        }
+        else {
+            pend = new Date(reply);
+        }
+        redis_data_returned += 1;
+    });
+    redisClient.get("experiment:end", function(err, reply) {
+        if(!(reply)){
+            eend = new Date();
+        }
+        else {
+            eend = new Date(reply);
+        }
+        redis_data_returned += 1;
+    });
+
+    while(!(redis_data_returned === 4)){
+    }
+
+
     redisClient.lrange(name, 0, -1, function(err, replies) {
         replies.forEach(function (res, i) {
 
@@ -190,11 +251,12 @@ function print_user_stats(name){
                 }
             });
 
-            if(item.createdAt < start_time){
+
+            if(item.createdAt < pstart){
                 before_avg += item.hr;
                 before_count += 1;
             }
-            else if (item.createdAt > start_time && item.createdAt < end_time) {
+            else if (item.createdAt > pstart && item.createdAt < pend) {
                 during_avg += item.hr;
                 during_count += 1;
             }
@@ -329,9 +391,9 @@ function reassociate_user_data(socket, name) {
 
 
 let port = 80;
-
-server.listen(port, '0.0.0.0', function(){
-    console.log('listening on http://localhost:' + port);
+let host = '0.0.0.0'
+server.listen(port, host, function(){
+    console.log('listening on http://'+host+':' + port);
 
 });
 
