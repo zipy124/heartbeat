@@ -208,7 +208,7 @@ function print_user_stats(name){
         }
         redis_data_returned += 1;
     });
-    redisClient.get("performance:start", function(err, reply) {
+    redisClient.get("begin:performance", function(err, reply) {
         if(!(reply)){
             pstart = new Date();
         }
