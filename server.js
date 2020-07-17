@@ -240,59 +240,64 @@ function print_user_stats(name){
     }
 
 
-    redisClient.lrange(name, 0, -1, function(err, replies) {
-        replies.forEach(function (res, i) {
+    function calc_print() {
 
-            let item = JSON.parse(res, function (key, value) {
-                if (key === 'createdAt') {
-                    return new Date(value);
+        if(redis_data_returned === 4) {
+            redisClient.lrange(name, 0, -1, function (err, replies) {
+                replies.forEach(function (res, i) {
+
+                    let item = JSON.parse(res, function (key, value) {
+                        if (key === 'createdAt') {
+                            return new Date(value);
+                        } else {
+                            return value;
+                        }
+                    });
+
+
+                    if (item.createdAt < pstart) {
+                        before_avg += item.hr;
+                        before_count += 1;
+                    } else if (item.createdAt > pstart && item.createdAt < pend) {
+                        during_avg += item.hr;
+                        during_count += 1;
+                    } else {
+                        after_avg += item.hr;
+                        after_count += 1;
+                    }
+
+                    console.log("Redis: " + item.user + ":" + item.hr.toString() + " at : " + item.createdAt.toISOString()
+                      .replace(/T/, ' ').replace(/\..+/, ''));
+                });
+
+                if ((before_avg > 0) && (before_count > 0)) {
+                    before_avg = Math.round(before_avg / before_count);
+                    console.log("Before: Avg HR: " + before_avg.toString() + " measurements: " + before_count.toString());
                 } else {
-                    return value;
+                    console.log("Before: No data, or bad data");
+                }
+
+                if ((during_avg > 0) && (during_count > 0)) {
+                    during_avg = Math.round(during_avg / during_count);
+                    console.log("During: Avg HR: " + during_avg.toString() + " measurements: " + during_count.toString());
+                } else {
+                    console.log("During: No data, or bad data");
+                }
+
+                if ((after_avg > 0) && (after_count > 0)) {
+                    after_avg = Math.round(after_avg / after_count);
+                    console.log("After: Avg HR: " + after_avg.toString() + " measurements: " + after_count.toString());
+                } else {
+                    console.log("After: No data, or bad data");
                 }
             });
-
-
-            if(item.createdAt < pstart){
-                before_avg += item.hr;
-                before_count += 1;
-            }
-            else if (item.createdAt > pstart && item.createdAt < pend) {
-                during_avg += item.hr;
-                during_count += 1;
-            }
-            else{
-                after_avg += item.hr;
-                after_count += 1;
-            }
-
-            console.log("Redis: " + item.user + ":" + item.hr.toString() + " at : " + item.createdAt.toISOString()
-                .replace(/T/, ' ').replace(/\..+/, ''));
-        });
-
-        if((before_avg > 0) && (before_count > 0)) {
-            before_avg = Math.round(before_avg / before_count);
-            console.log("Before: Avg HR: " + before_avg.toString() + " measurements: " + before_count.toString());
         }
         else{
-            console.log("Before: No data, or bad data");
+            setTimeout(calc_print, 100);
         }
+    }
 
-        if((during_avg > 0) && (during_count > 0)) {
-            during_avg = Math.round(during_avg / during_count);
-            console.log("During: Avg HR: " + during_avg.toString() + " measurements: " + during_count.toString());
-        }
-        else{
-            console.log("During: No data, or bad data");
-        }
-
-        if((after_avg > 0) && (after_count > 0)) {
-            after_avg = Math.round(after_avg / after_count);
-            console.log("After: Avg HR: " + after_avg.toString() + " measurements: " + after_count.toString());
-        }
-        else{
-            console.log("After: No data, or bad data");
-        }
-    });
+    calc_print();
 }
 
 
