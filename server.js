@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
 
     socket.on('begin-experiment', () => {
         let key = new Date()
-        redisClient.rpush("experiment:start", key.toJSON(), function(err, reply) {
+        redisClient.set("experiment:start", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('e-start', "");
                 console.log("Experiment started!")
@@ -106,11 +106,10 @@ io.on('connection', (socket) => {
 
     socket.on('begin-performance', () => {
         let key = new Date()
-        redisClient.rpush("performance:start", key.toJSON(), function(err, reply) {
+        redisClient.set("performance:start", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('p-start', "");
                 console.log("Performance started!")
-                console.log(key);
             }
             else{
                 console.log("Redis push error: "+err);
@@ -120,7 +119,7 @@ io.on('connection', (socket) => {
 
     socket.on('performance-end', () => {
         let key = new Date()
-        redisClient.rpush("performance:ended", key.toJSON(), function(err, reply) {
+        redisClient.set("performance:ended", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('p-end', "");
                 console.log("Performance ended!")
@@ -133,7 +132,7 @@ io.on('connection', (socket) => {
 
     socket.on('experiment-end', () => {
         let key = new Date()
-        redisClient.rpush("experiment:ended", key.toJSON(), function(err, reply) {
+        redisClient.set("experiment:ended", key.toJSON(), function(err, reply) {
             if(reply) {
                 io.emit('e-end', "");
                 console.log("Experiment ended!")
@@ -210,7 +209,6 @@ function print_user_stats(name){
         redis_data_returned += 1;
     });
     redisClient.get("performance:start", function(err, reply) {
-        console.log(reply);
         if(!(reply)){
             pstart = new Date();
         }
@@ -218,7 +216,6 @@ function print_user_stats(name){
             pstart = new Date(reply);
         }
         redis_data_returned += 1;
-        console.log(pstart);
     });
     redisClient.get("performance:ended", function(err, reply) {
         if(!(reply)){
