@@ -236,10 +236,6 @@ function print_user_stats(name){
         redis_data_returned += 1;
     });
 
-    while(!(redis_data_returned === 4)){
-    }
-
-
     function calc_print() {
 
         if(redis_data_returned === 4) {
