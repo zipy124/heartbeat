@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
 
     socket.on('vis-request', () => {
         if(first_vis){
-            calculate_and_send_vis()
+            calculate_and_send_vis(socket)
             first_vis = false;
         }
         else {
