@@ -68,14 +68,14 @@
     function myLoop(current_index) {
         setTimeout(function () {
             var now = d3.select('#cc');
-            now.transition().duration(500).attr("r", i[current_index]).attr("stroke-opacity", v[current_index]).attr("stroke-width", v[current_index])
+            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-opacity", v[current_index]).attr("stroke-width", v[current_index])
             if (current_index < i.length - 1) {
                 myLoop(current_index + 1)
             }
             else{
                 socket.emit('vis-request', ""); // When finished request more data
             }
-        }, 1000);
+        }, 3000);
 
         // change this time (in milliseconds) to whatever you desire
     }
