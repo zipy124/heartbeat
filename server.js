@@ -199,7 +199,7 @@ function print_user_stats(name){
 
     let redis_data_returned = 0;
 
-    redisClient.get("experiment:start", function(err, reply) {
+    redisClient.get("begin-experiment", function(err, reply) {
         if(!(reply)){
             estart = new Date();
         }
