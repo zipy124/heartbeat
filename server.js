@@ -328,6 +328,10 @@ function calculate_and_send_vis(socket) {
         }
     }
     if (new_data.length === 0) {
+        console.log(data);
+        vis_data = JSON.stringify(data);
+        vis_time = new Date();
+        socket.emit('visualise', vis_data);
         return
     }
     let min_new_data_to_send = min(new_data);
