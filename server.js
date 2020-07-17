@@ -199,7 +199,7 @@ function print_user_stats(name){
 
     let redis_data_returned = 0;
 
-    redisClient.get("begin-experiment", function(err, reply) {
+    redisClient.get("experiment:start", function(err, reply) {
         if(!(reply)){
             estart = new Date();
         }
@@ -208,7 +208,7 @@ function print_user_stats(name){
         }
         redis_data_returned += 1;
     });
-    redisClient.get("begin-performance", function(err, reply) {
+    redisClient.get("performance:start", function(err, reply) {
         if(!(reply)){
             pstart = new Date();
         }
@@ -217,7 +217,7 @@ function print_user_stats(name){
         }
         redis_data_returned += 1;
     });
-    redisClient.get("performance-end", function(err, reply) {
+    redisClient.get("performance:ended", function(err, reply) {
         if(!(reply)){
             pend = new Date();
         }
@@ -226,7 +226,7 @@ function print_user_stats(name){
         }
         redis_data_returned += 1;
     });
-    redisClient.get("experiment-end", function(err, reply) {
+    redisClient.get("experiment:ended", function(err, reply) {
         if(!(reply)){
             eend = new Date();
         }
