@@ -30,7 +30,7 @@
 
     function doStuff() {
         socket.emit('send-message', { hr: Math.round(Math.random()*30+resting)});
-        setTimeout(doStuff, 1000);
+        setTimeout(doStuff, 3000);
     }
     $(function () {
         $('#user').submit(function(e) {
