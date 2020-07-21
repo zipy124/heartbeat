@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
         else {
             let now = new Date();
             let results = JSON.parse(vis_data)["average"].length;
-            if (((now - vis_time) / 1000) > results) {
+            if (((now - vis_time) / 1000) > (results*3)) {
                 calculate_and_send_vis(socket);
             } else {
                 socket.emit('visualise', vis_data);
