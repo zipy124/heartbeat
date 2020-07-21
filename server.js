@@ -79,11 +79,11 @@ function redisToJson() {
 securedRoutes.get('/data', (req, res) => {
 
     var jsonString = redisToJson();
-
-    const json2csvParser = new Parser(["hr", "user", "createdAt"]);
+    console.log(jsonString);
+    const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]});
     const csvString = json2csvParser.parse(jsonString);
 
-    res.setHeader('Content-disposition', 'attachment; filename=shifts-report.csv');
+    res.setHeader('Content-disposition', 'attachment; filename=hrData.csv');
     res.set('Content-Type', 'text/csv');
     res.status(200).send(csvString);
 })
