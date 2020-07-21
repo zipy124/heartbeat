@@ -100,7 +100,7 @@ securedRoutes.get('/data', (req, res) => {
     function callbackCSV(jsonString, res) {
         console.log(jsonString);
         const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]});
-        const csvString = json2csvParser.parse(JSON.stringify(jsonString));
+        const csvString = json2csvParser.parse(jsonString);
 
         res.setHeader('Content-disposition', 'attachment; filename=hrData.csv');
         res.set('Content-Type', 'text/csv');
