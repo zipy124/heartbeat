@@ -12,7 +12,7 @@ redisClient.on('error', function (err) {
     console.log('Error ' + err)
 }) // Log redis errors in the console
 
-redisClient.flushdb(); // Empties redis database, only use in DEBUG, in production this could wipe valuable data.
+//redisClient.flushdb(); // Empties redis database, only use in DEBUG, in production this could wipe valuable data.
 
 let app = require('express')();
 const basicAuth = require('express-basic-auth')
@@ -69,7 +69,14 @@ function redisToJson(callback, res) {
         numbers++;
         redisClient.lrange(name, 0, -1, function (err, replies) {
             replies.forEach(function (res, i) {
-                data.push(res);
+                let item = JSON.parse(res, function (key, value) {
+                    if (key === 'createdAt') {
+                        return new Date(value);
+                    } else {
+                        return value;
+                    }
+                });
+                data.push(item);
             });
             reps++;
         });
