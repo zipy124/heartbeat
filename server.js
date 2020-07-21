@@ -3,6 +3,8 @@
 // node index.js // Run your server
 const { variance, mean, min } = require('mathjs');
 
+const { Parser } = require('json2csv');
+
 let redis = require('redis');
 let redisClient = redis.createClient(6379, "heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com");
 
@@ -50,11 +52,30 @@ securedRoutes.get('', (req, res) => {
     res.sendFile(__dirname + '/index.html'); // root '/' directory returns index.html
 });
 
+function redisToJson() {
+
+    return undefined;
+}
+
+securedRoutes.get('/data', (req, res) => {
+
+    var jsonString = redisToJson();
+
+    const json2csvParser = new Parser(["dateTime", "token", "hr"]);
+    const csvString = json2csvParser.parse(jsonString);
+
+    res.setHeader('Content-disposition', 'attachment; filename=shifts-report.csv');
+    res.set('Content-Type', 'text/csv');
+    res.status(200).send(csvString);
+})
+
 app.use('/admin', securedRoutes);
 
 app.get('/vis', (req, res) => {
     res.sendFile(__dirname + '/vis.html'); // root '/' directory returns index.html
 });
+
+
 
 // Start of socket.io endpoints and handling
 // -----------------------------------------
@@ -413,7 +434,9 @@ let port = 80;
 let host = '0.0.0.0'
 server.listen(port, host, function(){
     console.log('listening on http://'+host+':' + port);
-
+    redisClient.keys("*", function(err, reply) {
+        console.log(reply);
+    });
 });
 
 
