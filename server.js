@@ -384,7 +384,7 @@ function print_user_stats(name){
 }
 
 
-function calculate_and_send_vis(socket) {
+function calculate_and_send_vis() {
     //console.log("vis request");
 
     // function wait_for_results(){
@@ -403,6 +403,8 @@ function calculate_and_send_vis(socket) {
     //     calculating = true;
     // }
 
+    let socket = io.sockets;
+
     let data = {"average": [], "variance": [], "raw": []};
 
     let new_data = [];
@@ -420,10 +422,10 @@ function calculate_and_send_vis(socket) {
         }
     }
     if (new_data.length === 0) {
-        //console.log(data);
-        vis_data = JSON.stringify(data);
-        vis_time = new Date();
-        socket.emit('visualise', vis_data);
+        console.log(data);
+        //vis_data = JSON.stringify(data);
+        //vis_time = new Date();
+        socket.emit('visualise', JSON.stringify(data));
         return
     }
     let min_new_data_to_send = min(new_data);
@@ -467,10 +469,10 @@ function calculate_and_send_vis(socket) {
             }
             //console.log("Trying to send results!");
             console.log(data);
-            vis_data = JSON.stringify(data);
-            vis_time = new Date();
-            calculating = false;
-            socket.emit('visualise', vis_data);
+            //vis_data = JSON.stringify(data);
+            //vis_time = new Date();
+            //calculating = false;
+            socket.emit('visualise', JSON.stringify(data));
         } else {
             setTimeout(send_results, 100)
         }
