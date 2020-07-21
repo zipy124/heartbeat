@@ -98,7 +98,7 @@ function redisToJson(callback, res) {
 securedRoutes.get('/data', (req, res) => {
 
     function callbackCSV(jsonString, res) {
-        console.log(jsonString);
+        //console.log(jsonString);
         const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]});
         const csvString = json2csvParser.parse(jsonString);
 
@@ -113,7 +113,7 @@ securedRoutes.get('/data', (req, res) => {
 securedRoutes.get('/api/data', (req, res) => {
 
     function callbackJSON(jsonString, res) {
-        console.log(jsonString);
+        //console.log(jsonString);
         res.setHeader('Content-Type', 'application/json');
         res.end( JSON.stringify(jsonString));
     }
