@@ -88,6 +88,14 @@ securedRoutes.get('/data', (req, res) => {
     res.status(200).send(csvString);
 })
 
+securedRoutes.get('/api/data', (req, res) => {
+
+    var jsonString = redisToJson();
+    console.log(jsonString);
+    res.setHeader('Content-Type', 'application/json');
+    res.end(jsonString)
+})
+
 app.use('/admin', securedRoutes);
 
 app.get('/vis', (req, res) => {
