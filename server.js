@@ -422,6 +422,7 @@ function calculate_and_send_vis() {
         }
     }
     if (new_data.length === 0) {
+        console.log("Zero data found:")
         console.log(data);
         //vis_data = JSON.stringify(data);
         //vis_time = new Date();
@@ -468,6 +469,7 @@ function calculate_and_send_vis() {
                 clients_last_data_point[name] = clients_data_length[name];
             }
             //console.log("Trying to send results!");
+            console.log("Found data")
             console.log(data);
             //vis_data = JSON.stringify(data);
             //vis_time = new Date();
