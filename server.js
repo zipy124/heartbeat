@@ -161,22 +161,22 @@ io.on('connection', (socket) => {
         }
     }); // let user be known by a name
 
-    socket.on('vis-request', () => {
-        if(first_vis){
-            calculate_and_send_vis(socket)
-            first_vis = false;
-        }
-        else {
-            let now = new Date();
-            let results = JSON.parse(vis_data)["average"].length;
-            if (((now - vis_time) / 1000) > (results*3)) {
-                calculate_and_send_vis(socket);
-            } else {
-                socket.emit('visualise', vis_data);
-                //console.log(JSON.parse(vis_data));
-            }
-        }
-    });
+    // socket.on('vis-request', () => {
+    //     if(first_vis){
+    //         calculate_and_send_vis(socket)
+    //         first_vis = false;
+    //     }
+    //     else {
+    //         let now = new Date();
+    //         let results = JSON.parse(vis_data)["average"].length;
+    //         if (((now - vis_time) / 1000) > (results*3)) {
+    //             calculate_and_send_vis(socket);
+    //         } else {
+    //             socket.emit('visualise', vis_data);
+    //             //console.log(JSON.parse(vis_data));
+    //         }
+    //     }
+    // });
 
     socket.on('begin-experiment', () => {
         let key = new Date()
