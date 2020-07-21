@@ -19,11 +19,11 @@ const basicAuth = require('express-basic-auth')
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 
-let vis_data;
-let vis_time;
-let first_vis = true;
-
-let calculating = false;
+// let vis_data;
+// let vis_time;
+// let first_vis = true;
+//
+// let calculating = false;
 
 let clients = new Set();
 let clients_last_data_point = {};
@@ -387,21 +387,21 @@ function print_user_stats(name){
 function calculate_and_send_vis(socket) {
     //console.log("vis request");
 
-    function wait_for_results(){
-        if(calculating){
-            setTimeout(wait_for_results, 50);
-        }
-        else{
-            socket.emit('visualise', vis_data);
-        }
-    }
+    // function wait_for_results(){
+    //     if(calculating){
+    //         setTimeout(wait_for_results, 50);
+    //     }
+    //     else{
+    //         socket.emit('visualise', vis_data);
+    //     }
+    // }
 
-    if (calculating){
-        setTimeout(wait_for_results, 150);
-    }
-    else{
-        calculating = true;
-    }
+    // if (calculating){
+    //     setTimeout(wait_for_results, 150);
+    // }
+    // else{
+    //     calculating = true;
+    // }
 
     let data = {"average": [], "variance": [], "raw": []};
 
@@ -514,6 +514,8 @@ server.listen(port, host, function(){
             }
         });
     });
+
+    setInterval(calculate_and_send_vis, 3000);
 
 });
 

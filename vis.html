@@ -60,7 +60,7 @@
         }
         else{ // If we didn't get any data back then wait, then re-request it!
             setTimeout(function () {
-                socket.emit('vis-request', "");
+                //socket.emit('vis-request', "");
             }, 1000);
         }
     });
@@ -73,7 +73,7 @@
                 myLoop(current_index + 1)
             }
             else{
-                socket.emit('vis-request', ""); // When finished request more data
+                //socket.emit('vis-request', ""); // When finished request more data
             }
         }, 3000);
 
@@ -81,7 +81,7 @@
     }
 
     // myLoop(0); // first call
-    socket.emit('vis-request', ""); //Request data to visualise
+    //socket.emit('vis-request', ""); //Request data to visualise
 </script>
 </body>
 
