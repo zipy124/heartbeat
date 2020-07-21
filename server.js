@@ -60,7 +60,7 @@ securedRoutes.get('', (req, res) => {
     res.sendFile(__dirname + '/index.html'); // root '/' directory returns index.html
 });
 
-function redisToJson() {
+function redisToJson(callback, res) {
 
     let data = [];
     let numbers = 0;
@@ -77,7 +77,7 @@ function redisToJson() {
 
     function waitForRedis(){
         if(reps === numbers){
-            return
+            callback(data,res);
         }
         else{
             setTimeout(waitForRedis,100);
@@ -90,22 +90,28 @@ function redisToJson() {
 
 securedRoutes.get('/data', (req, res) => {
 
-    var jsonString = redisToJson();
-    console.log(jsonString);
-    const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]});
-    const csvString = json2csvParser.parse(jsonString);
+    function callbackCSV(jsonString, res) {
+        console.log(jsonString);
+        const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]});
+        const csvString = json2csvParser.parse(jsonString);
 
-    res.setHeader('Content-disposition', 'attachment; filename=hrData.csv');
-    res.set('Content-Type', 'text/csv');
-    res.status(200).send(csvString);
+        res.setHeader('Content-disposition', 'attachment; filename=hrData.csv');
+        res.set('Content-Type', 'text/csv');
+        res.status(200).send(csvString);
+    }
+
+    redisToJson(callbackCSV, res);
 })
 
 securedRoutes.get('/api/data', (req, res) => {
 
-    var jsonString = redisToJson();
-    console.log(jsonString);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(jsonString)
+    function callbackJSON(jsonString, res) {
+        console.log(jsonString);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(jsonString)
+    }
+
+    redisToJson(callbackJSON, res);
 })
 
 app.use('/admin', securedRoutes);
@@ -158,7 +164,7 @@ io.on('connection', (socket) => {
                 calculate_and_send_vis(socket);
             } else {
                 socket.emit('visualise', vis_data);
-                console.log(JSON.parse(vis_data));
+                //console.log(JSON.parse(vis_data));
             }
         }
     });
@@ -434,7 +440,7 @@ function calculate_and_send_vis(socket) {
                 clients_last_data_point[name] = clients_data_length[name];
             }
             //console.log("Trying to send results!");
-            console.log(data);
+            //console.log(data);
             vis_data = JSON.stringify(data);
             vis_time = new Date();
             socket.emit('visualise', vis_data);
