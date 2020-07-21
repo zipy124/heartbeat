@@ -41,6 +41,14 @@ function login (req, res) {
     // or call next() if you use it as middleware (as snippet #1)
 }
 
+var testUsers = [
+    'User token',
+    'ta1wpfyq',
+    '4x2rag0t',
+    '14tmsp3u'
+]
+
+
 var securedRoutes = require('express').Router()
 
 securedRoutes.use(basicAuth({
@@ -54,14 +62,25 @@ securedRoutes.get('', (req, res) => {
 
 function redisToJson() {
 
-    return undefined;
+    let data = [];
+
+    for (let name of testUsers) {
+
+        redisClient.lrange(name, 0, -1, function (err, replies) {
+            replies.forEach(function (res, i) {
+                data.push(res);
+            });
+        });
+    }
+
+    return data;
 }
 
 securedRoutes.get('/data', (req, res) => {
 
     var jsonString = redisToJson();
 
-    const json2csvParser = new Parser(["dateTime", "token", "hr"]);
+    const json2csvParser = new Parser(["hr", "user", "createdAt"]);
     const csvString = json2csvParser.parse(jsonString);
 
     res.setHeader('Content-disposition', 'attachment; filename=shifts-report.csv');
