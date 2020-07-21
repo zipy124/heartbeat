@@ -23,23 +23,25 @@ let vis_data;
 let vis_time;
 let first_vis = true;
 
+let calculating = false;
+
 let clients = new Set();
 let clients_last_data_point = {};
 let clients_data_length = {};
 
-function login (req, res) {
-//btoa('yourlogin:yourpassword') -> "eW91cmxvZ2luOnlvdXJwYXNzd29yZA=="
-//btoa('otherlogin:otherpassword') -> "b3RoZXJsb2dpbjpvdGhlcnBhc3N3b3Jk"
-
-    // Verify credentials
-    if (  req.headers.authorization !== 'Basic eW91cmxvZ2luOnlvdXJwYXNzd29yZA=='
-      && req.headers.authorization !== 'Basic b3RoZXJsb2dpbjpvdGhlcnBhc3N3b3Jk')
-        return res.status(401).send('Authentication required.') // Access denied.
-
-    // Access granted...
-    res.sendFile(__dirname + '/index.html'); // root '/' directory returns index.html
-    // or call next() if you use it as middleware (as snippet #1)
-}
+// function login (req, res) {
+// //btoa('yourlogin:yourpassword') -> "eW91cmxvZ2luOnlvdXJwYXNzd29yZA=="
+// //btoa('otherlogin:otherpassword') -> "b3RoZXJsb2dpbjpvdGhlcnBhc3N3b3Jk"
+//
+//     // Verify credentials
+//     if (  req.headers.authorization !== 'Basic eW91cmxvZ2luOnlvdXJwYXNzd29yZA=='
+//       && req.headers.authorization !== 'Basic b3RoZXJsb2dpbjpvdGhlcnBhc3N3b3Jk')
+//         return res.status(401).send('Authentication required.') // Access denied.
+//
+//     // Access granted...
+//     res.sendFile(__dirname + '/index.html'); // root '/' directory returns index.html
+//     // or call next() if you use it as middleware (as snippet #1)
+// }
 
 var testUsers = [
     'User token',
@@ -384,6 +386,23 @@ function print_user_stats(name){
 
 function calculate_and_send_vis(socket) {
     //console.log("vis request");
+
+    function wait_for_results(){
+        if(calculating){
+            setTimeout(wait_for_results, 50);
+        }
+        else{
+            socket.emit('visualise', vis_data);
+        }
+    }
+
+    if (calculating){
+        setTimeout(wait_for_results, 150);
+    }
+    else{
+        calculating = true;
+    }
+
     let data = {"average": [], "variance": [], "raw": []};
 
     let new_data = [];
@@ -401,7 +420,7 @@ function calculate_and_send_vis(socket) {
         }
     }
     if (new_data.length === 0) {
-        console.log(data);
+        //console.log(data);
         vis_data = JSON.stringify(data);
         vis_time = new Date();
         socket.emit('visualise', vis_data);
@@ -447,9 +466,10 @@ function calculate_and_send_vis(socket) {
                 clients_last_data_point[name] = clients_data_length[name];
             }
             //console.log("Trying to send results!");
-            //console.log(data);
+            console.log(data);
             vis_data = JSON.stringify(data);
             vis_time = new Date();
+            calculating = false;
             socket.emit('visualise', vis_data);
         } else {
             setTimeout(send_results, 100)
