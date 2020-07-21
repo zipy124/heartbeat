@@ -411,11 +411,11 @@ function calculate_and_send_vis() {
     let clients_with_new_data = [];
 
     for (let name of clients) {
-        //console.log("Checking "+name);
+        console.log("Checking "+name);
         let length = clients_data_length[name];
-        //console.log(length);
+        console.log(length);
         let last_data = clients_last_data_point[name];
-        //console.log(last_data);
+        console.log(last_data);
         if (length - last_data > 0) {
             new_data.push(length - last_data);
             clients_with_new_data.push(name);
