@@ -63,16 +63,28 @@ securedRoutes.get('', (req, res) => {
 function redisToJson() {
 
     let data = [];
-
+    let numbers = 0;
+    let reps = 0;
     for (let name of testUsers) {
-
+        numbers++;
         redisClient.lrange(name, 0, -1, function (err, replies) {
             replies.forEach(function (res, i) {
                 data.push(res);
             });
+            reps++;
         });
     }
 
+    function waitForRedis(){
+        if(reps === numbers){
+            return
+        }
+        else{
+            setTimeout(waitForRedis,100);
+        }
+    }
+
+    setTimeout(waitForRedis,100);
     return data;
 }
 
