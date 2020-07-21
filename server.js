@@ -487,13 +487,13 @@ let host = '0.0.0.0'
 server.listen(port, host, function(){
     console.log('listening on http://'+host+':' + port);
 
-    redisClient.keys("*", function(err, reply) {
-        for (let key in reply){
+    redisClient.keys("*", function(err, replies) {
+        replies.forEach(function (key, i) {
             console.log(key);
             if(!(key.startsWith("performance")) && !(key.startsWith("experiment"))){
-                console.log("Name detected" + key.toString());
+                console.log("Name detected: " + key.toString());
             }
-        }
+        });
     });
 
 });
