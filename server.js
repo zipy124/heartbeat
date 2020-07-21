@@ -65,7 +65,7 @@ function redisToJson(callback, res) {
     let data = [];
     let numbers = 0;
     let reps = 0;
-    for (let name of testUsers) {
+    for (let name of clients) {
         numbers++;
         redisClient.lrange(name, 0, -1, function (err, replies) {
             replies.forEach(function (res, i) {
@@ -486,9 +486,16 @@ let port = 80;
 let host = '0.0.0.0'
 server.listen(port, host, function(){
     console.log('listening on http://'+host+':' + port);
+
     redisClient.keys("*", function(err, reply) {
-        console.log(reply);
+        for (let key in reply){
+            console.log(key);
+            if(!(key.startsWith("performance")) && !(key.startsWith("experiment"))){
+                console.log("Name detected" + key.toString());
+            }
+        }
     });
+
 });
 
 
