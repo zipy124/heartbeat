@@ -49,7 +49,7 @@
 
 
     socket.on('visualise', (message) => { // After requesting data server will send this message
-        // console.log(message) //-> message is a string such as "[50,23,50,20,33]"
+        console.log(message) //-> message is a string such as "[50,23,50,20,33]"
         i = JSON.parse(message)["average"];
         // console.log(i); //-> i is now that string turned into an array such as [50,23,50,20,33]
 
