@@ -46,7 +46,9 @@
     // var i = [80, 100, 120, 90, 60, 75]; //input from server
 
     //Changes size of radius of HR circle
-
+    var i;
+    var v;
+    var var_inv;
 
     socket.on('visualise', (message) => { // After requesting data server will send this message
         console.log(message) //-> message is a string such as "[50,23,50,20,33]"
@@ -54,26 +56,19 @@
         // console.log(i); //-> i is now that string turned into an array such as [50,23,50,20,33]
 
         v = JSON.parse(message)["variance"]; // This is for the variance
+        var_inv = v.map(x => (1/x)*10);
 
         if(i.length > 0) { // If we have data, visualise it
             myLoop(0)
-        }
-        else{ // If we didn't get any data back then wait, then re-request it!
-            setTimeout(function () {
-                //socket.emit('vis-request', "");
-            }, 1000);
         }
     });
 
     function myLoop(current_index) {
         setTimeout(function () {
             var now = d3.select('#cc');
-            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-opacity", v[current_index]).attr("stroke-width", v[current_index])
+            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-opacity", v[current_index]).attr("stroke-width", var_inv[current_index])
             if (current_index < i.length - 1) {
                 myLoop(current_index + 1)
-            }
-            else{
-                //socket.emit('vis-request', ""); // When finished request more data
             }
         }, 3000);
 
