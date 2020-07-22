@@ -56,7 +56,7 @@
         // console.log(i); //-> i is now that string turned into an array such as [50,23,50,20,33]
 
         v = JSON.parse(message)["variance"]; // This is for the variance
-        var_inv = v.map(x => (1/x)*10);
+        var_inv = v.map(x => (   x<50 ? 50-x : 0   ));
 
         if(i.length > 0) { // If we have data, visualise it
             myLoop(0)
