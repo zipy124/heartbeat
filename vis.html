@@ -12,6 +12,7 @@
 <div id="svgcontainer" style="height:100%"></div>
 <script>
     let socket = io.connect('https://heartbeat.zaksmorgan.com');
+    //let socket = io.connect();
     var width = "100%";
     var height = "100%";
     //Create SVG element
@@ -26,7 +27,7 @@
         .attr("r", 100)
         .attr("stroke", "orange")
         .attr("stroke-width", 5)
-        .attr("stroke-opacity", .5)
+        .attr("stroke-opacity", 1)
         .attr('id', 'cc')
         .attr("fill", "none");
 
@@ -39,7 +40,8 @@
         .attr("stroke", "grey")
         .attr("stroke-width", 5)
         .attr("stroke-opacity", 1)
-        .attr("fill", "none");
+        .attr("fill", "none")
+        .attr("id", 'cc2');
 
 
 
@@ -50,13 +52,21 @@
     var v;
     var var_inv;
 
+    socket.on('baseline', (message) => {
+      console.log(message);
+      baseline = parseInt(message);
+      var base = d3.select('#cc2');
+      base.attr('r',baseline);
+    });
+
     socket.on('visualise', (message) => { // After requesting data server will send this message
         console.log(message) //-> message is a string such as "[50,23,50,20,33]"
         i = JSON.parse(message)["average"];
         // console.log(i); //-> i is now that string turned into an array such as [50,23,50,20,33]
-
+        i = [60,60,60,60,60]
         v = JSON.parse(message)["variance"]; // This is for the variance
-        var_inv = v.map(x => (   x<75 ? 75-x : 5   ));
+        var_inv = v.map(x => (   x<145 ? 150-x : 5   ));
+        var_inv = [50,100,130,140,150]
 
         if(i.length > 0) { // If we have data, visualise it
             myLoop(0)
@@ -66,7 +76,7 @@
     function myLoop(current_index) {
         setTimeout(function () {
             var now = d3.select('#cc');
-            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-opacity", v[current_index]).attr("stroke-width", var_inv[current_index])
+            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-width", var_inv[current_index])
             if (current_index < i.length - 1) {
                 myLoop(current_index + 1)
             }
@@ -77,6 +87,7 @@
 
     // myLoop(0); // first call
     //socket.emit('vis-request', ""); //Request data to visualise
+    socket.emit("request-baseline", "");
 </script>
 </body>
 

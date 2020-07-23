@@ -7,6 +7,7 @@ const { Parser } = require('json2csv');
 
 let redis = require('redis');
 let redisClient = redis.createClient(6379, "heartbeat.38wcux.ng.0001.euw1.cache.amazonaws.com");
+//let redisClient = redis.createClient();
 
 redisClient.on('error', function (err) {
     console.log('Error ' + err)
@@ -28,6 +29,9 @@ let io = require('socket.io')(server);
 let clients = new Set();
 let clients_last_data_point = {};
 let clients_data_length = {};
+let base_data = [];
+let recording = false;
+let stored_baseline = 0;
 
 // function login (req, res) {
 // //btoa('yourlogin:yourpassword') -> "eW91cmxvZ2luOnlvdXJwYXNzd29yZA=="
@@ -142,6 +146,30 @@ io.on('connection', (socket) => {
         } // if known user disconnects emit event 'left'
     });
 
+    socket.on('start-baseline', () => {
+        recording = true;
+        io.emit("start-baseline-c", "");
+    });
+
+    socket.on('reset-baseline', () => {
+        stored_baseline = 0;
+        base_data = [];
+    });
+
+    socket.on('end-baseline', () => {
+        recording = false;
+
+        stored_baseline = mean(base_data);
+
+        io.emit("baseline", stored_baseline);
+
+        io.emit("end-baseline-c", "");
+    });
+
+    socket.on('request-baseline', () => {
+        io.emit("baseline", stored_baseline);
+    })
+
     socket.on('user_joined', (name) => {
 
         // Should have an option to say they are connecting for first time, to check against duplicate users??
@@ -233,6 +261,9 @@ io.on('connection', (socket) => {
     socket.on('send-message', (message) => {
         if(socket.username) { // if known user submits heart rate, send out the information
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()}
+            if(recording){
+                base_data.push(message.hr);
+            }
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
                 if(reply) {
                     clients_data_length[socket.username] = reply;
@@ -506,7 +537,7 @@ function reassociate_user_data(socket, name) {
 }
 
 
-let port = 80;
+let port = 8080;
 let host = '0.0.0.0'
 server.listen(port, host, function(){
     console.log('listening on http://'+host+':' + port);

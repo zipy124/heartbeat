@@ -28,6 +28,14 @@
       document.getElementById("b4").disabled = true;
     });
 
+    socket.on('start-baseline-c', () => {
+      document.getElementById("b5").disabled = true;
+    });
+
+    socket.on('end-baseline-c', () => {
+      document.getElementById("b6").disabled = true;
+    });
+
     function doStuff() {
         socket.emit('send-message', { hr: Math.round(Math.random()*30+resting)});
         setTimeout(doStuff, 3000);
@@ -74,6 +82,21 @@
             socket.emit('reset', "");
             return false;
         });
+      $('#startb').submit(function(e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('start-baseline', "");
+        return false;
+      });
+      $('#endb').submit(function(e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('end-baseline', "");
+        return false;
+      });
+      $('#resetb').submit(function(e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('reset-baseline', "");
+        return false;
+      });
     });
     setTimeout(doStuff, 1000);
 </script>
@@ -81,29 +104,39 @@
     <input id="m" autocomplete="off" /><button>Change Username</button>
 </form>
 
-<form id="print_log" action="">
-    <button>Print All data</button>
+<form id="startb" action="">
+    <button id="b5">Begin Baseline</button>
 </form>
 
-<form id="begin-e" action="">
-    <button id="b1">Begin Experiment</button>
+<form id="endb" action="">
+    <button id="b6">End Baseline</button>
 </form>
+<form id="resetb" action="">
+    <button id="b7">End Baseline</button>
+</form>
+<!--<form id="print_log" action="">-->
+<!--    <button>Print All data</button>-->
+<!--</form>-->
 
-<form id="begin-p" action="">
-    <button id="b2">Begin Performance</button>
-</form>
+<!--<form id="begin-e" action="">-->
+<!--    <button id="b1">Begin Experiment</button>-->
+<!--</form>-->
 
-<form id="end-p" action="">
-    <button id="b3">End Performance</button>
-</form>
+<!--<form id="begin-p" action="">-->
+<!--    <button id="b2">Begin Performance</button>-->
+<!--</form>-->
 
-<form id="end-e" action="">
-    <button id="b4">End Experiment</button>
-</form>
+<!--<form id="end-p" action="">-->
+<!--    <button id="b3">End Performance</button>-->
+<!--</form>-->
 
-<form id="reset" action="">
-    <button>RESET ALL DATA</button>
-</form>
+<!--<form id="end-e" action="">-->
+<!--    <button id="b4">End Experiment</button>-->
+<!--</form>-->
+
+<!--<form id="reset" action="">-->
+<!--    <button>RESET ALL DATA</button>-->
+<!--</form>-->
 
 </body>
 </html>
