@@ -537,7 +537,7 @@ function reassociate_user_data(socket, name) {
 }
 
 
-let port = 8080;
+let port = 80;
 let host = '0.0.0.0'
 server.listen(port, host, function(){
     console.log('listening on http://'+host+':' + port);
