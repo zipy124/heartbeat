@@ -152,6 +152,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('reset-baseline', () => {
+        recording = false;
         stored_baseline = 0;
         base_data = [];
     });

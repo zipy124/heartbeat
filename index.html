@@ -95,6 +95,8 @@
       $('#resetb').submit(function(e) {
         e.preventDefault(); // prevents page reloading
         socket.emit('reset-baseline', "");
+        document.getElementById("b5").disabled = false;
+        document.getElementById("b6").disabled = false;
         return false;
       });
     });
