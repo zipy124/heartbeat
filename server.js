@@ -268,7 +268,7 @@ io.on('connection', (socket) => {
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) {
                 if(reply) {
                     clients_data_length[socket.username] = reply;
-                    console.log(socket.username + ":" +message.hr.toString() + ", " + reply.toString() + " results");
+                    // console.log(socket.username + ":" +message.hr.toString() + ", " + reply.toString() + " results");
                 }
                 else{
                     console.log("Redis push error: "+err);
@@ -454,8 +454,8 @@ function calculate_and_send_vis() {
         }
     }
     if (new_data.length === 0) {
-        console.log("Zero data found:")
-        console.log(data);
+        // console.log("Zero data found:")
+        // console.log(data);
         //vis_data = JSON.stringify(data);
         //vis_time = new Date();
         socket.emit('visualise', JSON.stringify(data));
@@ -501,8 +501,8 @@ function calculate_and_send_vis() {
                 clients_last_data_point[name] = clients_data_length[name];
             }
             //console.log("Trying to send results!");
-            console.log("Found data")
-            console.log(data);
+            // console.log("Found data")
+            // console.log(data);
             //vis_data = JSON.stringify(data);
             //vis_time = new Date();
             //calculating = false;
