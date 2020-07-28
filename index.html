@@ -8,25 +8,9 @@
 </head>
 <body>
 <script>
-    var socket = io.connect('https://heartbeat.zaksmorgan.com');
+    var socket = io.connect('https://heartbeat.zaksmorgan.com'); // Server to connect to
     //var socket = io();
     var resting = 50;
-
-    socket.on('e-start', () => {
-      document.getElementById("b1").disabled = true;
-    });
-
-    socket.on('p-start', () => {
-      document.getElementById("b2").disabled = true;
-    });
-
-    socket.on('p-end', () => {
-      document.getElementById("b3").disabled = true;
-    });
-
-    socket.on('e-end', () => {
-      document.getElementById("b4").disabled = true;
-    });
 
     socket.on('start-baseline-c', () => {
       document.getElementById("b5").disabled = true;
@@ -48,57 +32,28 @@
             return false;
         });
 
-        $('#print_log').submit(function(e) {
-            e.preventDefault(); // prevents page reloading
-            socket.emit('print', "");
-            return false;
-        });
-        $('#begin-e').submit(function(e) {
-            e.preventDefault(); // prevents page reloading
-            socket.emit('begin-experiment', "");
-            resting = 60;
-            return false;
-        });
-        $('#begin-p').submit(function(e) {
-            e.preventDefault(); // prevents page reloading
-            socket.emit('begin-performance', "");
-            resting = 70;
-            return false;
-        });
-        $('#end-p').submit(function(e) {
-            e.preventDefault(); // prevents page reloading
-            socket.emit('performance-end', "");
-            resting = 60;
-            return false;
-        });
-        $('#end-e').submit(function(e) {
-            e.preventDefault(); // prevents page reloading
-            socket.emit('experiment-end', "");
-            resting = 50;
-            return false;
-        });
         $('#reset').submit(function(e) {
             e.preventDefault(); // prevents page reloading
             socket.emit('reset', "");
             return false;
         });
-      $('#startb').submit(function(e) {
-        e.preventDefault(); // prevents page reloading
-        socket.emit('start-baseline', "");
-        return false;
-      });
-      $('#endb').submit(function(e) {
-        e.preventDefault(); // prevents page reloading
-        socket.emit('end-baseline', "");
-        return false;
-      });
-      $('#resetb').submit(function(e) {
-        e.preventDefault(); // prevents page reloading
-        socket.emit('reset-baseline', "");
-        document.getElementById("b5").disabled = false;
-        document.getElementById("b6").disabled = false;
-        return false;
-      });
+        $('#startb').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('start-baseline', "");
+            return false;
+        });
+        $('#endb').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('end-baseline', "");
+            return false;
+        });
+        $('#resetb').submit(function(e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('reset-baseline', "");
+            document.getElementById("b5").disabled = false;
+            document.getElementById("b6").disabled = false;
+            return false;
+        });
     });
     setTimeout(doStuff, 1000);
 </script>
@@ -113,32 +68,14 @@
 <form id="endb" action="">
     <button id="b6">End Baseline</button>
 </form>
+
 <form id="resetb" action="">
     <button id="b7">Reset Baseline</button>
 </form>
-<!--<form id="print_log" action="">-->
-<!--    <button>Print All data</button>-->
-<!--</form>-->
 
-<!--<form id="begin-e" action="">-->
-<!--    <button id="b1">Begin Experiment</button>-->
-<!--</form>-->
-
-<!--<form id="begin-p" action="">-->
-<!--    <button id="b2">Begin Performance</button>-->
-<!--</form>-->
-
-<!--<form id="end-p" action="">-->
-<!--    <button id="b3">End Performance</button>-->
-<!--</form>-->
-
-<!--<form id="end-e" action="">-->
-<!--    <button id="b4">End Experiment</button>-->
-<!--</form>-->
-
-<!--<form id="reset" action="">-->
-<!--    <button>RESET ALL DATA</button>-->
-<!--</form>-->
+<form id="reset" action="">
+    <button>RESET ALL DATA</button>
+</form>
 
 </body>
 </html>
