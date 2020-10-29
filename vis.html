@@ -66,7 +66,7 @@
       console.log(message);
       baseline = parseInt(message);
       var base = d3.select('#cc2');
-      base.attr('r',baseline);
+      base.attr('r',baseline + 50);
     });
 
     socket.on('visualise', (message) => { // After requesting data server will send this message
