@@ -66,7 +66,8 @@
       console.log(message);
       baseline = parseInt(message);
       var base = d3.select('#cc2');
-      base.attr('r',baseline + 50);
+      var size = baseline + 50;
+      base.attr('r', size);
     });
 
     socket.on('visualise', (message) => { // After requesting data server will send this message
@@ -87,7 +88,8 @@
             now.transition().duration(1500).attr("r", i[current_index] + 50).attr("stroke-width", var_inv[current_index])
 
             var text = d3.select('#meanT');
-            text.text(i[current_index].toString())
+            var new_string = i[current_index].toString();
+            text.text(new_string);
 
             if (current_index < i.length - 1) {
                 myLoop(current_index + 1)
