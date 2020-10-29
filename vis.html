@@ -2,7 +2,7 @@
 <html style="height: 100%">
 
 <head>
-    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript" src="https://d3js.org/d3.v6.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
@@ -43,6 +43,16 @@
         .attr("fill", "none")
         .attr("id", 'cc2');
 
+    svg.append("text")
+        .attr("x", "50%")
+        .attr("y", "50%")
+        .attr("fill", "black")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .text("mean")
+        .attr('id', 'meanT');
+
 
 
     // var i = [80, 100, 120, 90, 60, 75]; //input from server
@@ -75,6 +85,10 @@
         setTimeout(function () {
             var now = d3.select('#cc');
             now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-width", var_inv[current_index])
+
+            var text = d3.select('#meanT');
+            text.text(i[current_index].toString())
+
             if (current_index < i.length - 1) {
                 myLoop(current_index + 1)
             }

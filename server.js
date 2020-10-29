@@ -31,7 +31,7 @@ let stored_baseline = 0; // Stored baseline from recorded period
 const securedRoutes = require('express').Router();
 
 securedRoutes.use(basicAuth({
-    users: { admin: 'unlimitedheartbeat2020' }, // Admin page username and password
+    users: { admin: 'examplespass' }, // Admin page username and password
     challenge: true // <--- needed to actually show the login dialog!
 }));
 
