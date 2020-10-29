@@ -84,7 +84,7 @@
     function myLoop(current_index) {
         setTimeout(function () {
             var now = d3.select('#cc');
-            now.transition().duration(1500).attr("r", i[current_index]).attr("stroke-width", var_inv[current_index])
+            now.transition().duration(1500).attr("r", i[current_index] + 50).attr("stroke-width", var_inv[current_index])
 
             var text = d3.select('#meanT');
             text.text(i[current_index].toString())
