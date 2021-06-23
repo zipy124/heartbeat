@@ -15,7 +15,7 @@ redisClient.on('error', function (err) {
 //redisClient.flushdb(); // Empties redis database, only use in DEBUG, in production this could wipe valuable data.
 
 let app = require('express')();
-const basicAuth = require('express-basic-auth')
+const basicAuth = require('express-basic-auth');
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 
