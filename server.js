@@ -134,16 +134,12 @@ io.on('connection', (socket) => {
             socket.username = name; // Register their name for their connection
             console.log(socket.username+" joined"); // log client name in server console
             clients.add(socket.username); // Add them to our clients set
-            if (!(socket.username in clients_last_data_point)) { // Set value '0' for their last data point visualized
-                clients_last_data_point[socket.username] = 0;
-            }
             io.emit('user_changed', {user: name, event: 'joined'}); // Emit confirmation to client
         }
     });
 
     // Receive HR data
     socket.on('send-message', (message) => {
-        console.log(message);
         if(socket.username) { // if known user submits heart rate, send out and record the information
             let data = {hr: message.hr, user: socket.username, createdAt: new Date()} // attach date to the info
 
