@@ -20,7 +20,6 @@ let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 
 let clients = new Set(); // Set (unique list) of identifiers we have seen so far
-let clients_data_length = {}; // Length of the data sets of each client
 
 const securedRoutes = require('express').Router();
 
@@ -80,7 +79,7 @@ securedRoutes.get('/data', (req, res) => {
      * @param object res - ExpressJS response object
      */
     function callbackCSV(Object, res) {
-        const json2csvParser = new Parser({fields: ["hr", "user", "createdAt"]}); // Fields for the CSV
+        const json2csvParser = new Parser({fields: ["hr", "user", "id", "createdAt"]}); // Fields for the CSV
         const csvString = json2csvParser.parse(Object); // Use our parser to create a CSV string
 
         res.setHeader('Content-disposition', 'attachment; filename=hrData.csv'); // Set headers
@@ -123,29 +122,19 @@ io.on('connection', (socket) => {
 
     // Handles users registering their name to their connection.
     socket.on('user_joined', (name) => {
-
-        // Should have an option to say they are connecting for first time, to check against duplicate users??
-
-        if(!(name === "")) { // Check name isn't empty
-            if((socket.username) && !(socket.username === name)){ // If they changed name, re-associate their data
-                reassociate_user_data(socket, name);
-            }
-
-            socket.username = name; // Register their name for their connection
-            console.log(socket.username+" joined"); // log client name in server console
-            clients.add(socket.username); // Add them to our clients set
-            io.emit('user_changed', {user: name, event: 'joined'}); // Emit confirmation to client
-        }
+        socket.username = socket.handshake.headers["x-forwarded-for"] + socket.handshake.headers["user-agent"]
+        socket.id = name
+        console.log(name+" joined: "+socket.username); // log client name in server console
+        clients.add(socket.username); // Add them to our clients set
     });
 
     // Receive HR data
     socket.on('send-message', (message) => {
         if(socket.username) { // if known user submits heart rate, send out and record the information
-            let data = {hr: message.hr, user: socket.username, createdAt: new Date()} // attach date to the info
+            let data = {hr: message.hr, user: socket.id, id: socket.username, createdAt: new Date()} // attach date to the info
 
             redisClient.rpush(socket.username, JSON.stringify(data), function(err, reply) { // Push to users Redis List
                 if(reply) { // If we get a reply update the clients recorded data length
-                    clients_data_length[socket.username] = reply;
                 }
                 else{ // Log our error
                     console.log("Redis push error: "+err);
@@ -161,37 +150,12 @@ io.on('connection', (socket) => {
         redisClient.flushdb(); // Empties redis database, only use in DEBUG, in production this could wipe valuable data.
 
         clients = new Set(); // Set (unique list) of identifiers we have seen so far
-        clients_data_length = {}; // Length of the data sets of each client
 
     });
 });
 
 // Start of helper functions
 // -------------------------
-
-/*
- * @desc When a user with a name changes their name, we will re-associate all their data with their new name
- * @param object socket - socket.io socket connection to grab the name for
- * @param String name - new name to update to
- */
-function reassociate_user_data(socket, name) {
-    clients.delete(socket.username); // Delete old name
-
-    if (socket.username in clients_data_length) {
-        clients_data_length[name] = clients_data_length[socket.username];
-    }
-
-    // Transfer Redis data
-    redisClient.lrange(socket.username, 0, -1, function (err, replies) {
-        replies.forEach(function (res, i) {
-            redisClient.rpush(name, res, function (err, reply) {
-                clients_data_length[name] = reply;
-            });
-        });
-        redisClient.del(socket.username); // Delete old username data
-    });
-}
-
 
 let port = 80; // HTTP port, requires running as admin/sudo/root
 let host = '0.0.0.0' // Host to listen on
