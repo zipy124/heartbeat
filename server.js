@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
 
     // Handles users registering their name to their connection.
     socket.on('user_joined', (name) => {
-        socket.username = socket.handshake.headers["x-forwarded-for"] + socket.handshake.headers["user-agent"]
+        socket.username = socket.handshake.headers["x-forwarded-for"] + " " + socket.handshake.headers["user-agent"]
         socket.id = name
         console.log(name+" joined: "+socket.username); // log client name in server console
         clients.add(socket.username); // Add them to our clients set
